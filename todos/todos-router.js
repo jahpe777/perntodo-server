@@ -13,6 +13,20 @@ todosRouter
       .then(todos => res.json(todos.map(TodosService.serializeTodo)))
       .catch(next);
   })
+  .patch(jsonParser, (req, res, next) => {
+    const possibleKey = ['description'];
+    const newUpdate = req.body;
+
+    Object.keys(newUpdate).forEach(key => {
+      if (!possibleKey.includes(key)) {
+        res.status(400).json({ error: `${key} is not a valid key` });
+      }
+    });
+
+    TodosService.updateTodo(req.app.get('db'), req.todos.id, newUpdate).then(
+      () => res.send(204)
+    );
+  })
   .post(jsonParser, (req, res, next) => {
     const { description } = req.body;
     if (description == null) {
